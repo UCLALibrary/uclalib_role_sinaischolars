@@ -1,0 +1,90 @@
+---
+- name: Download Java and Install
+  yum: name=java-1.8.0-openjdk-devel.x86_64 state=present
+
+- name: Install SetupTools
+  shell: wget https://bootstrap.pypa.io/ez_setup.py -O - | python
+
+- name: Install Supervisor
+  shell: easy_install supervisor
+
+- name: Install Python libselinux to run Supervisor
+  yum: name=libselinux-python.x86_64 state=present
+
+- name: Add user to run Java
+  user: name=sinai state=present
+
+- name: Install Htop
+  yum: name=htop state=present
+
+- name: Install Nmap
+  yum: name=nmap state=present
+
+- name: Install Nano
+  yum: name=nano state=present
+
+- name: Install Unzip
+  yum: name=unzip state=present
+
+- name: Install Lynx
+  yum: name=lynx state=present
+
+- name: Install GCC to compile Authbind
+  yum: name=gcc.x86_64 state=present
+
+- name: Download Authbind
+  get_url: url=http://ftp.debian.org/debian/pool/main/a/authbind/authbind_2.1.1+nmu1.tar.gz dest=/tmp/authbind.tar.gz sha256sum=98118a7f28220b25fb43728a3a58ddc8fa58a1dd566095019bf22e213e5f4abe
+
+- name: Unpack Authbind
+  unarchive: src=/tmp/authbind.tar.gz dest=/tmp copy=no
+
+- name: Change Authbind's Makefile prefix
+  shell: sed -i -e 's|prefix=/usr/local|prefix=/usr|' "/tmp/authbind-2.1.1+nmu1/Makefile"
+
+- name: Compile and install Authbind
+  shell: make install
+  args:
+    chdir: /tmp/authbind-2.1.1+nmu1
+
+- name: Configure Authbind's secure HTTP port
+  copy: content="" dest=/etc/authbind/byport/443 owner=sinai mode=0500
+
+- name: Configure Authbind's non-secure HTTP port
+  copy: content="" dest=/etc/authbind/byport/80 owner=sinai mode=0500
+
+- name: Create Sinai directory
+  file: path=/opt/sinai owner=sinai mode=0700 state=directory
+
+- name: Start Sinai's Jenkins build
+  script: triggerjenkins.sh {{ jiiify_jenkins_auth }} {{ jiiify_build_token }}
+  no_log: True
+
+- name: Download Sinai
+  shell: wget --user=ksclarke --password={{ jiiify_jenkins_auth }} -O /opt/sinai/sinai-web-{{ sinai_version }}-exec.jar --auth-no-challenge https://jenkins.library.ucla.edu/job/sinai-web/ws/target/sinai-web-{{ sinai_version }}-exec.jar
+  no_log: True
+
+- name: Remove Sinai artifact from Jenkins server
+  shell: curl -u ksclarke:{{ jiiify_jenkins_auth }} "https://jenkins.library.ucla.edu/job/sinai-web-cleanup/build?token={{ jiiify_build_token }}"
+  no_log: True
+
+- name: Set file attributes for Jar file
+  file: path=/opt/sinai/sinai-web-{{ sinai_version }}-exec.jar owner=sinai mode=0600 state=file
+
+  # Using unzip instead of unarchive because we're only unzippping one particular file
+- name: Unpack Sinai supervisord.conf file
+  shell: unzip -o -d /etc /opt/sinai/sinai-web-{{ sinai_version }}-exec.jar supervisord.conf
+
+- name: Set supervisord.conf file attributes
+  file: path=/etc/supervisord.conf mode=0600 state=file
+
+- name: Create Supervisor log file directory
+  file: path=/var/log/supervisor mode=0700 state=directory
+
+- name: Create Supervisor log file
+  copy: content="" dest=/var/log/supervisor/supervisord.log mode=0600
+
+- name: Make sure Supervisor is running
+  shell: if [ ! -e /var/run/supervisor.sock ] ; then supervisord -c /etc/supervisord.conf ; fi
+
+- name: Restart Supervisor with new config file
+  supervisorctl: name=sinai state=restarted config=/etc/supervisord.conf
