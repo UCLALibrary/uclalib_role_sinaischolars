@@ -5,6 +5,7 @@
 # Also, when we get a production Jenkins, use a Jenkins user other than ksclarke
 #
 
+SINAI_STAGING_VM="lit243v"
 JOB_URL="https://jenkins.library.ucla.edu/job/sinai-web"
 JOB_STATUS_URL="${JOB_URL}/lastBuild/api/json"
 
@@ -12,8 +13,16 @@ GREP_RETURN_CODE=0
 LOOP_LIMIT=24
 LOOP_COUNT=0
 
+if [ "$3" == "$SINAI_STAGING_VM" ]; then
+  HOST_NAME="stage-sinai.library.ucla.edu"
+  SOLR_SERVER="http%3A%2F%2Fsolrsearch.library.ucla.edu%2Fsolr%2Fsinai"
+else
+  HOST_NAME="localhost"
+  SOLR_SERVER="http%3A%2F%2Flocalhost%3A8983%2Fsolr%2Fsinai"
+fi
+
 # Start the build
-curl -u "ksclarke:${1}" -L -s "${JOB_URL}/buildWithParameters?delay=0sec&host=localhost&token=${2}"
+curl -u "ksclarke:${1}" -L -s "${JOB_URL}/buildWithParameters?delay=0sec&HOST=${HOST_NAME}&SOLR_HOST=${SOLR_SERVER}&token=${2}"
 
 # Poll every ten seconds until the build is finished
 while [ $GREP_RETURN_CODE -eq 0 ]

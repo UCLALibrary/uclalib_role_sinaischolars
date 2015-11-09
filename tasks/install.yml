@@ -56,7 +56,7 @@
   file: path=/opt/sinai owner=sinai mode=0700 state=directory
 
 - name: Start Sinai's Jenkins build
-  script: triggerjenkins.sh {{ jiiify_jenkins_auth }} {{ jiiify_build_token }}
+  script: triggerjenkins.sh {{ jiiify_jenkins_auth }} {{ jiiify_build_token }} {{ ansible_nodename }}
   no_log: True
 
 - name: Download Sinai
