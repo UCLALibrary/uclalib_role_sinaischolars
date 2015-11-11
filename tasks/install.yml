@@ -55,8 +55,14 @@
 - name: Create Sinai directory
   file: path=/opt/sinai owner=sinai mode=0700 state=directory
 
+- name: Create Sinai logs directory
+  file: path=/var/log/sinai owner=sinai mode=0700 state=directory
+
+- name: Create Sinai conf directory
+  file: path=/etc/sinai owner=sinai mode=0700 state=directory
+
 - name: Start Sinai's Jenkins build
-  script: triggerjenkins.sh {{ jiiify_jenkins_auth }} {{ jiiify_build_token }} {{ ansible_nodename }}
+  script: trigger-jenkins.sh {{ jiiify_jenkins_auth }} {{ jiiify_build_token }} {{ ansible_nodename }}
   no_log: True
 
 - name: Download Sinai
@@ -74,8 +80,19 @@
 - name: Unpack Sinai supervisord.conf file
   shell: unzip -o -d /etc /opt/sinai/sinai-web-{{ sinai_version }}-exec.jar supervisord.conf
 
+  # Using unzip instead of unarchive because we're only unzippping one particular file
+- name: Unpack Sinai JSON config file
+  shell: unzip -o -d /etc/sinai /opt/sinai/sinai-web-{{ sinai_version }}-exec.jar sample-config.json
+
+- name: Reconfigure Sinai JSON config file
+  script: configure-sinai.sh {{ google_oauth_id }} {{ facebook_oauth_id }} {{ twitter_oauth_id }} {{ twitter_oauth_key }}
+  no_log: True
+
 - name: Set supervisord.conf file attributes
   file: path=/etc/supervisord.conf mode=0600 state=file
+
+- name: Set Sinai JSON config file attributes
+  file: path=/etc/sinai/config.json owner=sinai mode=0600 state=file
 
 - name: Create Supervisor log file directory
   file: path=/var/log/supervisor mode=0700 state=directory
