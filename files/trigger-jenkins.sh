@@ -15,7 +15,7 @@ LOOP_COUNT=0
 
 if [ "$3" == "$SINAI_STAGING_VM" ]; then
   HOST_NAME="stage-sinai.library.ucla.edu"
-  SOLR_SERVER="http%3A%2F%2Fsolrsearch.library.ucla.edu%2Fsolr%2Fsinai"
+  SOLR_SERVER="http%3A%2F%2Ftemp-solrsearch.library.ucla.edu%2Fsolr%2Fsinai"
 else
   HOST_NAME="localhost"
   SOLR_SERVER="http%3A%2F%2Flocalhost%3A8983%2Fsolr%2Fsinai"
