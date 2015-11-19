@@ -13,7 +13,8 @@ GREP_RETURN_CODE=0
 LOOP_LIMIT=24
 LOOP_COUNT=0
 
-if [ "$3" == "$SINAI_STAGING_VM" ]; then
+# Going to keep both local and EC2 configuration options for now
+if [ "$3" == "$SINAI_STAGING_VM" ] || [ ! -z "$4" ]; then
   HOST_NAME="stage-sinai.library.ucla.edu"
   SOLR_SERVER="http%3A%2F%2Ftemp-solrsearch.library.ucla.edu%2Fsolr%2Fsinai"
 else

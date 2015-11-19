@@ -1,4 +1,7 @@
 ---
+- name: Gather EC2 facts
+  action: ec2_facts
+
 - name: Download Java and Install
   yum: name=java-1.8.0-openjdk-devel.x86_64 state=present
 
@@ -62,7 +65,7 @@
   file: path=/etc/sinai owner=sinai mode=0700 state=directory
 
 - name: Start Sinai's Jenkins build
-  script: trigger-jenkins.sh {{ jiiify_jenkins_auth }} {{ jiiify_build_token }} {{ ansible_nodename }}
+  script: trigger-jenkins.sh {{ jiiify_jenkins_auth }} {{ jiiify_build_token }} {{ ansible_nodename }} {{ ansible_ami_id }}
   no_log: True
 
 - name: Download Sinai
