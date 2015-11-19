@@ -64,8 +64,14 @@
 - name: Create Sinai conf directory
   file: path=/etc/sinai owner=sinai mode=0700 state=directory
 
-- name: Start Sinai's Jenkins build
-  script: trigger-jenkins.sh {{ jiiify_jenkins_auth }} {{ jiiify_build_token }} {{ ansible_nodename }} {{ ansible_ami_id }}
+- name: Start Sinai's Jenkins build for AWS
+  script: trigger-jenkins.sh {{ jiiify_jenkins_auth }} {{ jiiify_build_token }} {{ ansible_ec2_ami_id }}
+  when: '"ami-" in "${ansible_ec2_ami_id}"'
+  no_log: True
+
+- name: Start Sinai's Jenkins build for local server
+  script: trigger-jenkins.sh {{ jiiify_jenkins_auth }} {{ jiiify_build_token }} {{ ansible_nodename }}
+  when: 'not "ami-" in "${ansible_ec2_ami_id}"'
   no_log: True
 
 - name: Download Sinai
