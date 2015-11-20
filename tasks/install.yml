@@ -5,6 +5,10 @@
 - name: Download Java and Install
   yum: name=java-1.8.0-openjdk-devel.x86_64 state=present
 
+- name: Add EPEL Repo
+  yum: name=https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm state=present
+  when: ansible_distribution == "CentOS"
+
 - name: Install SetupTools
   shell: wget https://bootstrap.pypa.io/ez_setup.py -O - | python
 
