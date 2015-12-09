@@ -15,6 +15,12 @@
 - name: Install Python libselinux to run Supervisor
   yum: name=libselinux-python.x86_64 state=present
 
+- name: Install Supervisor init script
+  copy: src=supervisor dest=/etc/init.d/supervisor owner=root group=root mode=0755
+
+- name: Configure supervisor to start at boot
+  service: name=supervisor enabled=yes
+
 - name: Add user to run Java
   user: name=sinai state=present
 
@@ -65,7 +71,7 @@
 - name: Create Sinai conf directory
   file: path=/etc/sinai owner=sinai mode=0700 state=directory
 
-- name: Start Sinai's Jenkins build for AWS
+- name: Start Sinai's Jenkins build
   script: trigger-jenkins.sh {{ jiiify_jenkins_auth }} {{ jiiify_build_token }} {{ ansible_domain }}
   no_log: True
 
@@ -89,7 +95,7 @@
   shell: unzip -o -d /etc/sinai /opt/sinai/sinai-web-{{ sinai_version }}-exec.jar sample-config.json
 
 - name: Reconfigure Sinai JSON config file
-  script: configure-sinai.sh {{ google_oauth_id }} {{ facebook_oauth_id }} {{ twitter_oauth_id }} {{ twitter_oauth_key }}
+  script: configure-sinai.sh {{ google_oauth_id }} {{ facebook_oauth_id }}
   no_log: True
 
 - name: Set supervisord.conf file attributes
