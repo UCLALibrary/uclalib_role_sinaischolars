@@ -43,7 +43,10 @@
   yum: name=gcc.x86_64 state=present
 
 - name: Download Authbind
-  get_url: url=http://ftp.debian.org/debian/pool/main/a/authbind/authbind_2.1.1+nmu1.tar.gz dest=/tmp/authbind.tar.gz sha256sum=98118a7f28220b25fb43728a3a58ddc8fa58a1dd566095019bf22e213e5f4abe
+  get_url:
+    url=http://ftp.debian.org/debian/pool/main/a/authbind/authbind_2.1.1+nmu1.tar.gz
+    dest=/tmp/authbind.tar.gz
+    sha256sum=98118a7f28220b25fb43728a3a58ddc8fa58a1dd566095019bf22e213e5f4abe
 
 - name: Unpack Authbind
   unarchive: src=/tmp/authbind.tar.gz dest=/tmp copy=no
@@ -97,6 +100,46 @@
 - name: Reconfigure Sinai JSON config file
   script: configure-sinai.sh {{ google_oauth_id }} {{ facebook_oauth_id }}
   no_log: True
+
+- name: Create JKS config directory
+  file:
+    path=/etc/letsencrypt/live/stage-sinai.library.ucla.edu
+    state=directory
+    group=root
+    owner=root
+    mode=0700
+    recurse=yes
+
+- name: Copy JKS config and create it
+  copy:
+    dest="{{ item.key }}"
+    content="{{ item.value.content }}"
+    owner="{{ item.value.owner }}"
+    group="{{ item.value.group }}"
+    mode="{{ item.value.mode }}"
+  with_dict: jks_secret_files
+  no_log: True
+
+  # Using unzip instead of unarchive because we're only unzippping one particular file
+- name: Unpack JKS generation script
+  shell: unzip -o -d /opt/sinai /opt/sinai/sinai-{{ sinai_version }}-exec.jar letsencrypt2jks.sh
+  when: ansible_domain == "library.ucla.edu" or ansible_domain == "us-west-1.compute.internal"
+
+- name: Set permissions on script
+  file: path=/opt/sinai/letsencrypt2jks.sh state=touch mode=0700
+  when: ansible_domain == "library.ucla.edu" or ansible_domain == "us-west-1.compute.internal"
+
+- name: Build JKS
+  shell: /opt/sinai/letsencrypt2jks.sh stage-sinai.library.ucla.edu $(cat /etc/supervisord.conf | grep -o 'sinai.key.pass=[^"]*' | tr "=" "\n" | grep -v '^sinai')
+  when: ansible_domain == "library.ucla.edu" or ansible_domain == "us-west-1.compute.internal"
+
+- name: Install JKS
+  shell: mv le_sinai.jks /etc/sinai/sinai.jks
+  when: ansible_domain == "library.ucla.edu" or ansible_domain == "us-west-1.compute.internal"
+
+- name: Set JKS permissions
+  file: path=/etc/sinai/sinai.jks state=touch mode=0600 owner=sinai group=sinai
+  when: ansible_domain == "library.ucla.edu" or ansible_domain == "us-west-1.compute.internal"
 
 - name: Set supervisord.conf file attributes
   file: path=/etc/supervisord.conf mode=0600 state=file
