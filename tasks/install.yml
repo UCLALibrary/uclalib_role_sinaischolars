@@ -122,7 +122,7 @@
 
   # Using unzip instead of unarchive because we're only unzippping one particular file
 - name: Unpack JKS generation script
-  shell: unzip -o -d /opt/sinai /opt/sinai/sinai-{{ sinai_version }}-exec.jar letsencrypt2jks.sh
+  shell: unzip -o -d /opt/sinai /opt/sinai/sinai-web-{{ sinai_version }}-exec.jar letsencrypt2jks.sh
   when: ansible_domain == "library.ucla.edu" or ansible_domain == "us-west-1.compute.internal"
 
 - name: Set permissions on script
