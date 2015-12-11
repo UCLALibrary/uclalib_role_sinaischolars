@@ -131,15 +131,15 @@
 
 - name: Build JKS
   shell: /opt/sinai/letsencrypt2jks.sh stage-sinai.library.ucla.edu $(cat /etc/supervisord.conf | grep -o 'sinai.key.pass=[^"]*' | tr "=" "\n" | grep -v '^sinai')
-  when: ansible_domain == "library.ucla.edu" or ansible_domain == "us-west-1.compute.internal" or ansible_domain == "eu-central-1"
+  when: ansible_domain == "library.ucla.edu" or ansible_domain == "us-west-1.compute.internal" or ansible_domain == "eu-central-1.compute.internal"
 
 - name: Install JKS
   shell: mv le_sinai.jks /etc/sinai/sinai.jks
-  when: ansible_domain == "library.ucla.edu" or ansible_domain == "us-west-1.compute.internal" or ansible_domain == "eu-central-1"
+  when: ansible_domain == "library.ucla.edu" or ansible_domain == "us-west-1.compute.internal" or ansible_domain == "eu-central-1.compute.internal"
 
 - name: Set JKS permissions
   file: path=/etc/sinai/sinai.jks state=touch mode=0600 owner=sinai group=sinai
-  when: ansible_domain == "library.ucla.edu" or ansible_domain == "us-west-1.compute.internal" or ansible_domain == "eu-central-1"
+  when: ansible_domain == "library.ucla.edu" or ansible_domain == "us-west-1.compute.internal" or ansible_domain == "eu-central-1.compute.internal"
 
 - name: Set supervisord.conf file attributes
   file: path=/etc/supervisord.conf mode=0600 state=file
