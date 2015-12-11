@@ -123,11 +123,11 @@
   # Using unzip instead of unarchive because we're only unzippping one particular file
 - name: Unpack JKS generation script
   shell: unzip -o -d /opt/sinai /opt/sinai/sinai-web-{{ sinai_version }}-exec.jar letsencrypt2jks.sh
-  when: ansible_domain == "library.ucla.edu" or ansible_domain == "us-west-1.compute.internal" or ansible_domain == "eu-central-1"
+  when: ansible_domain == "library.ucla.edu" or ansible_domain == "us-west-1.compute.internal" or ansible_domain == "eu-central-1.compute.internal"
 
 - name: Set permissions on script
   file: path=/opt/sinai/letsencrypt2jks.sh state=touch mode=0700
-  when: ansible_domain == "library.ucla.edu" or ansible_domain == "us-west-1.compute.internal" or ansible_domain == "eu-central-1"
+  when: ansible_domain == "library.ucla.edu" or ansible_domain == "us-west-1.compute.internal" or ansible_domain == "eu-central-1.compute.internal"
 
 - name: Build JKS
   shell: /opt/sinai/letsencrypt2jks.sh stage-sinai.library.ucla.edu $(cat /etc/supervisord.conf | grep -o 'sinai.key.pass=[^"]*' | tr "=" "\n" | grep -v '^sinai')
