@@ -12,7 +12,7 @@ GREP_RETURN_CODE=0
 LOOP_LIMIT=24
 LOOP_COUNT=0
 
-if [[ "$3" == "library.ucla.edu" ]] || [[ "$3" == "us-west-1.compute.internal" ]] || [[ "$3" == "eu-central-1"  ]]; then
+if [[ "$3" == "library.ucla.edu" ]] || [[ "$3" == "us-west-1.compute.internal" ]] || [[ "$3" == "eu-central-1.compute.internal"  ]]; then
   HOST_NAME="stage-sinai.library.ucla.edu"
   SOLR_SERVER="http%3A%2F%2Ftemp-solrsearch.library.ucla.edu%2Fsolr%2Fsinai"
   JKS_PATH="/etc/sinai/sinai.jks"
