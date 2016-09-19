@@ -1,0 +1,21 @@
+---
+- name: Add group for Java user
+  group: name=sinai gid=601 state=present
+
+- name: Add user to run Java
+  user: name=sinai comment="sinai user" uid=601 group=sinai state=present
+
+- name: Set authorized keys for sinai
+  authorized_key: user=sinai key="ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAgEAuranTB/AcmYss0VkvQvPwkdtUad+cHQ3LFZzzxUeDE+1dP4mmPwDTqARda1AeiDxQIANnNLGCnDIeNjdKo18cox/txCPCLt9akyjlFNspXs9XpiSQSzJWOWDV8sb1b/Xuumf0ynzIZ7KeNQsTwSxXFI1cl1XEyBV5nup6/GcXK6bp2RnvCdVHAplmtTthJTGj/E4qKV0s3DMiZku0pduH7zzyXDzrTbXWIRNZ695rzHzE2l0wX8WZgtyxikWnfviyu1ICJxrbyXqXZ20n18a/PjYyJPp8XeAjAm3bddpPUlRmxNBBnY6LgCUb0m+0ZWEDjC88TFqm696nHLLj/NDrf1pO1VRv7SMOjtgweM4EXGa/alk1Or1JF1a10vYlgdhHJ2gNPndv8Elg2duGMGTWoJ9nRwS/A/YU5NU/9tTTIBvW01rad5wgld4aEl0Azo2vboELmWI/1mPTZ88aPZfjHf2tA3Qd3KQNiUNAC2T4uTV/4qMDo1KXiHEE9QtDYfiBEL/+wk5I1Z4vqCAei7joUZhwplGZsQsUqViJKspnkuLKS+abAtOGwCVZrW/Fhd7tnO578ozom9iJEyTJdisUeKaiv15MwllOTYMnKS6Kfcj3soZLb/hYq9UzbJ46/GZxPCtFLJilrAvLBZ85ZnyvZPXy8gTNY4lSXuenWm9VDk= ksclarke@gmail.com"
+
+- name: Create sinai directory
+  file: path=/opt/sinai owner=sinai mode=0700 state=directory
+
+- name: Create sinai logs directory
+  file: path=/var/log/sinai owner=sinai mode=0700 state=directory
+
+- name: Create sinai data dir
+  file: path=/mnt/sinai_data owner=sinai mode=0700 state=directory
+
+- name: Create sinai conf directory
+  file: path=/etc/sinai owner=sinai mode=0700 state=directory
