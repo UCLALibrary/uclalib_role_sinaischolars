@@ -1,6 +1,6 @@
 ---
 - name: Start Sinai's Jenkins build
-  script: trigger-jenkins.sh {{ sinai_jenkins_auth }} {{ sinai_build_token }} {{ sinai_env }}.library.ucla.edu {{ secret_files[sinai_env]['github_branch'] }}
+  script: trigger-jenkins.sh {{ sinai_jenkins_auth }} {{ sinai_build_token }} {{ sinai_env }}.library.ucla.edu {{ secret_files[sinai_env]['github_branch'] }} {{ secret_files[sinai_env]['image_server'] }}
   no_log: True
 
 - name: Download Sinai
