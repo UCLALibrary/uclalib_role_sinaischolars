@@ -1,1 +1,6 @@
 ---
+- name: create supervisord socket
+  shell: if [ ! -e /var/run/supervisor.sock ] ; then supervisord -c /etc/supervisord.conf ; fi
+
+- name: restart supervisord
+  supervisorctl: name=sinai state=restarted config=/etc/supervisord.conf

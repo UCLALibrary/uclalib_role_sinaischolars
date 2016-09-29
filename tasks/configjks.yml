@@ -1,0 +1,61 @@
+---
+- name: Create JKS config directory
+  file:
+    path={{ sslpath }}/{{ sinai_env }}
+    state=directory
+    group=root
+    owner=root
+    mode=0700
+    recurse=yes
+
+- name: Copy SSL key
+  copy:
+    dest={{ sslpath }}/{{ sinai_env }}-key
+    content={{ secret_files[sinai_env]['privkey'] }}
+    owner=root
+    group=root
+    mode=0600
+  no_log: True
+
+- name: Copy SSL cert
+  copy:
+    dest={{ sslpath }}/{{ sinai_env }}-crt
+    content={{ secret_files[sinai_env]['cert'] }}
+    owner=root
+    group=root
+    mode=0644
+  no_log: True
+
+- name: Copy InCommon Chain
+  copy:
+    dest={{ sslpath }}/{{ sinai_env }}-incommon-chain
+    content={{ secret_files['incommon']['cert'] }}
+    owner=root
+    group=root
+    mode=0644
+  no_log: True
+
+- name: Link current cert
+  file: src={{ sslpath }}/{{ sinai_env }}-crt dest={{ sslpath }}/current-crt state=link
+
+- name: Link current key
+  file: src={{ sslpath }}/{{ sinai_env }}-key dest={{ sslpath }}/current-key state=link
+
+- name: Link current chain
+  file: src={{ sslpath }}/{{ sinai_env }}-incommon-chain dest={{ sslpath }}/current-chain state=link
+
+  # Using unzip instead of unarchive because we're only unzippping one particular file
+- name: Upload JKS generation script
+  copy: src=jksgen-incommon.sh dest=/opt/sinai/jksgen-incommon.sh owner=root group=root mode=0700
+
+- name: Build JKS
+  shell: /opt/sinai/jksgen-incommon.sh {{ sinai_env }}.library.ucla.edu $(cat /etc/supervisord.conf | grep -o 'sinai.key.pass=[^"]*' | tr "=" "\n" | grep -v '^sinai')
+
+- name: Install JKS
+  shell: mv le_sinai.jks /etc/sinai/sinai.jks
+
+- name: Set JKS permissions
+  file: path=/etc/sinai/sinai.jks state=touch mode=0600 owner=sinai group=sinai
+  notify:
+    - create supervisord socket
+    - restart supervisord

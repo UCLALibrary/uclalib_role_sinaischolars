@@ -1,2 +1,7 @@
 ---
-- include: install.yml
+- include: createsystemusers.yml
+- include: installtools.yml
+- include: jenkinsdeploy.yml
+  tags: [ codedeploy, merge ]
+- include: configjks.yml
+  tags: [ codedeploy, merge ]
