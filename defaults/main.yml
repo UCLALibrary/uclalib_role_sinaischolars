@@ -1,2 +1,3 @@
 ---
 sinai_version: 0.0.1-SNAPSHOT
+solr_server: "http%3A%2F%2Flocalhost%3A8983%2Fsolr%2Fsinai"

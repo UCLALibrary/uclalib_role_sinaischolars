@@ -46,20 +46,20 @@
 
 - name: Download Authbind
   get_url:
-    url=http://ftp.debian.org/debian/pool/main/a/authbind/authbind_2.1.1+nmu1.tar.gz
+    url=http://ftp.debian.org/debian/pool/main/a/authbind/authbind_2.1.1.tar.gz
     dest=/tmp/authbind.tar.gz
-    sha256sum=98118a7f28220b25fb43728a3a58ddc8fa58a1dd566095019bf22e213e5f4abe
+    sha256sum=65b26b83b7ca5aa713524e0aff439f71a0ba8970913768457a22239540a9c73a
 
 - name: Unpack Authbind
   unarchive: src=/tmp/authbind.tar.gz dest=/tmp copy=no
 
 - name: Change Authbind's Makefile prefix
-  shell: sed -i -e 's|prefix=/usr/local|prefix=/usr|' "/tmp/authbind-2.1.1+nmu1/Makefile"
+  shell: sed -i -e 's|prefix=/usr/local|prefix=/usr|' "/tmp/authbind-2.1.1/Makefile"
 
 - name: Compile and install Authbind
   shell: make install
   args:
-    chdir: /tmp/authbind-2.1.1+nmu1
+    chdir: /tmp/authbind-2.1.1
 
 - name: Configure Authbind's secure HTTP port
   copy: content="" dest=/etc/authbind/byport/443 owner=sinai mode=0500

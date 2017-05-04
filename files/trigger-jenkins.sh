@@ -22,7 +22,7 @@ LOOP_COUNT=0
 #  JKS_PATH="sinai.jks"
 #fi
 HOST_NAME=$3
-SOLR_SERVER="http%3A%2F%2Flocalhost%3A8983%2Fsolr%2Fsinai"
+SOLR_SERVER=$6
 JKS_PATH="/etc/sinai/sinai.jks"
 GITHUB_BRANCH=$4
 IMAGE_SERVER=$5
