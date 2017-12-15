@@ -13,7 +13,7 @@
   no_log: true
 
 - name: Bundle jceks with jar
-  shell: jar -uf /opt/sinai/{{ secret_files[sinai_env]['sinai_vers'] }} {{ secret_files[sinai_env]['sinai_jceks'] }}
+  shell: jar -uf /opt/sinai/{{ secret_files[sinai_env]['sinai_vers'] }} -C /etc/sinai sinai.jceks
 
 - name: Create Supervisor log file directory
   file: path=/var/log/supervisor mode=0700 state=directory
