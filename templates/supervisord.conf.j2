@@ -1,0 +1,34 @@
+# Supervisor configuration for Sinai-Web
+
+[unix_http_server]
+file=/var/run/supervisor.sock
+chmod=0700
+
+[supervisord]
+# Docker uses nodaemon=true
+#nodaemon=true
+logfile=/var/log/supervisor/supervisord.log
+pidfile=/var/run/supervisord.pid
+childlogdir=/var/log/supervisor
+
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory=supervisor.rpcinterface:make_main_rpcinterface
+
+[supervisorctl]
+serverurl=unix:///var/run/supervisor.sock
+
+[program:sinai]
+user=sinai
+directory=/tmp
+autostart=true
+autorestart=true
+command=authbind java
+    "-Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory"
+    "-Dsinai.key.pass={{ secret_files[sinai_env]['sinai_key_pass'] }}" "-Dsinai.temp.dir=/tmp/sinai-temp-dir" "-Dsinai.port=443"
+    "-Dsinai.redirect.port=80" "-Dsinai.host={{ secret_files[sinai_env]['sinai_host'] }}" "-Dsinai.solr.server={{ secret_files[sinai_env]['solr_server'] }}"
+    "-Dvertx.metrics.options.enabled=true" "-Dvertx.metrics.options.registryName=sinai.metrics"
+    "-Dsinai.jks={{ secret_files[sinai_env]['sinai_jks'] }}" "-Dsinai.image.server={{ secret_files[sinai_env]['image_server'] }}"
+    "-Dcom.sun.management.jmxremote" "-Dvertx.options.jmxEnabled=true" "-Djdk.tls.ephemeralDHKeySize=2048"
+    "-Dsinai.metadata.server={{ secret_files[sinai_env]['sinai_metadata_server'] }}"
+    "-Dsinai.id.key={{ secret_files[sinai_env]['sinai_id_key'] }}"
+    -jar /opt/sinai/sinai-web-0.0.1-SNAPSHOT.jar

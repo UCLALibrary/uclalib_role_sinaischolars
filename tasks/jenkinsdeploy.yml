@@ -1,36 +1,12 @@
 ---
-#- name: Start Sinai's Jenkins build
-#  script: trigger-jenkins.sh {{ sinai_jenkins_auth }} {{ sinai_build_token }} {{ sinai_env }}.library.ucla.edu {{ secret_files[sinai_env]['github_branch'] }} {{ secret_files[sinai_env]['image_server'] }} {{ secret_files[sinai_env]['solr_server'] }}
-#  no_log: True
-
-#- name: Download Sinai
-#  shell: wget --user=ksclarke --password={{ sinai_jenkins_auth }} -O /opt/sinai/sinai-web-{{ sinai_version }}-exec.jar --auth-no-challenge https://jenkins.library.ucla.edu/job/sinai-web/ws/target/sinai-web-{{ sinai_version }}-exec.jar
-#  no_log: True
-
-#- name: Remove Sinai artifact from Jenkins server
-#  shell: curl -u ksclarke:{{ sinai_jenkins_auth }} "https://jenkins.library.ucla.edu/job/sinai-web-cleanup/build?token={{ sinai_build_token }}"
-#  no_log: True
-
 - name: Download Sinai Artifact
-  shell: wget -O /opt/sinai/sinai-web-{{ sinai_version }}.jar http://build-artifacts.library.ucla.edu/sinai-web/sinai-web-{{ sinai_version }}.jar
+  shell: wget http://build-artifacts.library.ucla.edu/sinai-web/{{ secret_files[sinai_env]['github_branch'] }}/{{ secret_files[sinai_env]['sinai_vers'] }} -O /opt/sinai/{{ secret_files[sinai_env]['sinai_vers'] }}
 
 - name: Set file attributes for Jar file
-  file: path=/opt/sinai/sinai-web-{{ sinai_version }}.jar owner=sinai mode=0600 state=file
+  file: path=/opt/sinai/{{ secret_files[sinai_env]['sinai_vers'] }} owner=sinai mode=0600 state=file
 
-  # Using unzip instead of unarchive because we're only unzippping one particular file
-- name: Unpack Sinai supervisord.conf file
-  shell: unzip -o -d /etc /opt/sinai/sinai-web-{{ sinai_version }}.jar supervisord.conf
-
-  # Using unzip instead of unarchive because we're only unzippping one particular file
-- name: Unpack Sinai JSON config file
-  shell: unzip -o -d /etc/sinai /opt/sinai/sinai-web-{{ sinai_version }}.jar sample-config.json
-
-- name: Reconfigure Sinai JSON config file
-  script: configure-sinai.sh {{ google_oauth_id }} {{ facebook_oauth_id }}
-  no_log: True
-
-- name: Set Sinai JSON config file attributes
-  file: path=/etc/sinai/config.json owner=sinai mode=0600 state=file
+- name: Upload supervisord.conf
+  template: src=supervisord.conf.j2 dest=/etc/supervisord.conf owner=root group=root mode=0600
 
 - name: Create Supervisor log file directory
   file: path=/var/log/supervisor mode=0700 state=directory
