@@ -31,4 +31,4 @@ command=authbind java
     "-Dcom.sun.management.jmxremote" "-Dvertx.options.jmxEnabled=true" "-Djdk.tls.ephemeralDHKeySize=2048"
     "-Dsinai.metadata.server={{ secret_files[sinai_env]['sinai_metadata_server'] }}"
     "-Dsinai.id.key={{ secret_files[sinai_env]['sinai_id_key'] }}"
-    -jar /opt/sinai/sinai-web-0.0.1-SNAPSHOT.jar
+    -jar /opt/sinai/sinai-web-0.0.1-SNAPSHOT.jar -conf /etc/sinai/config.json

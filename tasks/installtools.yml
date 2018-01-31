@@ -5,11 +5,20 @@
 - name: Install wget
   yum: name=wget state=present
 
-- name: Install SetupTools
-  shell: wget https://bootstrap.pypa.io/ez_setup.py -O - | python
+- name: Install python pip
+  package:
+    name: python-pip
+    state: present
 
-- name: Install Supervisor
-  shell: easy_install supervisor
+- name: Install SetupTools
+  pip:
+    name: setuptools
+    version: 38.4.0
+
+- name: Install supervisord
+  pip:
+    name: supervisor
+    version: 3.3.3
 
 - name: Install Python libselinux to run Supervisor
   yum: name=libselinux-python.x86_64 state=present
