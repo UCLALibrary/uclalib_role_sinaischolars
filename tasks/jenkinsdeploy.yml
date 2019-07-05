@@ -13,6 +13,13 @@
     mode: 0600
   no_log: True
 
+- name: upload logback XML
+  copy:
+    src: logback.xml
+    dest: /etc/sinai/logback.xml
+    owner: sinai
+    mode: 0644
+
 - name: Upload supervisord.conf
   template: src=supervisord.conf.j2 dest=/etc/supervisord.conf owner=root group=root mode=0600
 
