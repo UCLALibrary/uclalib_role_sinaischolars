@@ -1,6 +1,6 @@
 ---
 - name: Download Sinai Artifact
-  shell: wget http://build-artifacts.library.ucla.edu/sinai-web/{{ secret_files[sinai_env]['github_branch'] }}/{{ secret_files[sinai_env]['sinai_vers'] }} -O /opt/sinai/{{ secret_files[sinai_env]['sinai_vers'] }}
+  shell: wget http://build-artifacts.library.ucla.edu/sinai-web/{{ sinai_github_branch }}/{{ secret_files[sinai_env]['sinai_vers'] }} -O /opt/sinai/{{ secret_files[sinai_env]['sinai_vers'] }}
 
 - name: Set file attributes for Jar file
   file: path=/opt/sinai/{{ secret_files[sinai_env]['sinai_vers'] }} owner=sinai mode=0600 state=file
