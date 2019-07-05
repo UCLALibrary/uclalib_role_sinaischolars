@@ -23,13 +23,6 @@
 - name: Upload supervisord.conf
   template: src=supervisord.conf.j2 dest=/etc/supervisord.conf owner=root group=root mode=0600
 
-- name: Upload sinai jceks
-  copy: src=sinai-jceks dest={{ secret_files[sinai_env]['sinai_jceks'] }} owner=root group=root mode=0600
-  no_log: true
-
-- name: Bundle jceks with jar
-  shell: jar -uf /opt/sinai/{{ secret_files[sinai_env]['sinai_vers'] }} -C /etc/sinai sinai.jceks
-
 - name: Create Supervisor log file directory
   file: path=/var/log/supervisor mode=0700 state=directory
 
