@@ -1,0 +1,33 @@
+<configuration>
+  <timestamp key="byDay" datePattern="yyyy-MM-dd" />
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%date [%thread] [%level] %logger{45} | %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${sinai.logs.dir}/sinai.log</file>
+    <append>false</append>
+    <encoder>
+      <pattern>%date [%thread] [%level] %logger{45} | %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="io.vertx.core.Starter" level="WARN" />
+  <logger name="ch.qos.logback" level="WARN" />
+
+  <logger name="edu.ucla.library.sinai" level="INFO">
+    <appender-ref ref="FILE" />
+  </logger>
+
+  <logger name="edu.ucla.library.sinai.templates.impl.HandlebarsTemplateEngineImpl" level="INFO">
+    <appender-ref ref="FILE" />
+  </logger>
+
+  <root level="DEBUG">
+    <appender-ref ref="FILE" />
+  </root>
+
+</configuration>
