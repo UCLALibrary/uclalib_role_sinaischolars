@@ -4,4 +4,4 @@
 - include: jenkinsdeploy.yml
   tags: [ codedeploy, merge ]
 - include: configjks.yml
-  tags: [ codedeploy, merge ]
+  tags: [ never ]
